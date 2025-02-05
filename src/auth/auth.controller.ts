@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseFilters } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto, ResendOtpDto, ResetPwDto } from './dto';
+import { AuthDto, ResendOtpDto, ResetPwDto, SigninDto } from './dto';
 import { VerifyEmailDto, VerifyEmailOtpDTo } from './dto/verify.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ThrottlerExceptionFilter } from './filters/throttler-exception-filtter';
@@ -15,7 +15,7 @@ export class AuthController {
   }
 
   @Post('signin')
-  signin(@Body() authDto: AuthDto) {
+  signin(@Body() authDto: SigninDto) {
     return this.authService.signin(authDto);
   }
 

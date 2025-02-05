@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto';
+import { AuthDto, SigninDto } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -63,7 +63,7 @@ export class AuthService {
     }
   }
 
-  async signin(authDto: AuthDto) {
+  async signin(authDto: SigninDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: authDto.email },
     });
@@ -110,7 +110,7 @@ export class AuthService {
 
     if (!user) throw new ForbiddenException("USer Doesn't exist");
 
-    await this.userVerify.sendOtpEmail(dto.email, otp);
+    // await this.userVerify.sendOtpEmail(dto.email, otp);
 
     return { message: 'Check Your Email For OTP.' };
   }
