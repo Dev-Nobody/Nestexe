@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { JobManagementModule } from './job-management/job-management.module';
+import { JobApplicationsModule } from './job-applications/job-applications.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
         },
       },
     }),
+    JobManagementModule,
+    JobApplicationsModule,
   ],
   providers: [
     {

@@ -11,6 +11,10 @@ export class AuthDto {
   @IsString()
   @IsNotEmpty()
   confirmPassword: string;
+
+  @IsString()
+  @IsNotEmpty()
+  role: string;
 }
 
 export class SigninDto {

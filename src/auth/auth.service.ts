@@ -38,6 +38,7 @@ export class AuthService {
           email: authDto.email,
           hash,
           isVerified: false,
+          role: authDto.role,
         },
       });
       const tokenData = this.signToken(user.id, user.email);
