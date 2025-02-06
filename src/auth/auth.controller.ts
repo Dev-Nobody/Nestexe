@@ -19,6 +19,11 @@ export class AuthController {
     return this.authService.signin(authDto);
   }
 
+  @Get('logout')
+  logout() {
+    return this.authService.logout();
+  }
+
   @Post('verify-email')
   verifyEmail(@Body() verifyDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyDto);

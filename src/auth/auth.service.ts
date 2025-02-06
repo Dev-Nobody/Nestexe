@@ -131,6 +131,10 @@ export class AuthService {
     }
   }
 
+  async logout() {
+    return { message: 'User Logout Sucessfully' };
+  }
+
   //Function For Creating Token
   async signToken(
     userId: number,

@@ -7,6 +7,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { JobManagementModule } from './job-management/job-management.module';
 import { JobApplicationsModule } from './job-applications/job-applications.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { JobApplicationsModule } from './job-applications/job-applications.modul
     }),
     JobManagementModule,
     JobApplicationsModule,
+    UserModule,
   ],
   providers: [
     {
