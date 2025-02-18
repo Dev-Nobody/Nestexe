@@ -5,24 +5,17 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS with necessary configurations
   app.enableCors({
-    origin: 'http://localhost:3000', // Allow the React frontend only
-    methods: ['GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS'], // Allow necessary methods including OPTIONS
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow the necessary headers
-    preflightContinue: false, // Do not pass the preflight request to the next handler
-    optionsSuccessStatus: 204, // The success status for OPTIONS requests
+    origin: '*', // Allow your frontend's origin
+    methods: ['GET', 'POST', 'OPTIONS'], // Allow PATCH method
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers
+    credentials: true, // If using authentication/cookies
+    preflightContinue: false,
+    optionsSuccessStatus: 204, // Standard success response for OPTIONS
   });
 
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // Allow frontend
-    res.header(
-      'Access-Control-Allow-Methods',
-      'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    );
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-  });
-
+  // Global Validation Pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -31,4 +24,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3001);
 }
+
 bootstrap();

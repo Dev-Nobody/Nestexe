@@ -13,7 +13,9 @@ import { CreateJobListingDto, UpdateJobListingDto } from './dto';
 import { JobManagementService } from './job-management.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtGuard } from './guard';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('job-management')
 export class JobManagementController {
   constructor(private jobManagement: JobManagementService) {}

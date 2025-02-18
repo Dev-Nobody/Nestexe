@@ -77,6 +77,7 @@ export class JobApplicationsService {
 
     return UpdatedApplication;
   }
+
   async applicantsList() {
     const applicantsList = await this.prismaService.jobApplication.findMany();
     if (!applicantsList)
@@ -98,5 +99,60 @@ export class JobApplicationsService {
     }
 
     return filteredApplicants;
+  }
+
+  async pendingApplicants() {
+    const pendingApplicants = await this.prismaService.jobApplication.findMany({
+      where: { applicationStatus: 'Pending' },
+    });
+
+    if (!pendingApplicants || pendingApplicants.length === 0) {
+      throw new NotFoundException('No Pending Applicants Found');
+    }
+
+    return pendingApplicants;
+  }
+
+  async shortlistedApplicants() {
+    const shortlistedApplicants =
+      await this.prismaService.jobApplication.findMany({
+        where: { applicationStatus: 'Shortlisted' },
+      });
+
+    if (!shortlistedApplicants || shortlistedApplicants.length === 0) {
+      throw new NotFoundException('No Shortlisted Applicants Found');
+    }
+
+    return shortlistedApplicants;
+  }
+
+  async getPendingApplications(id: number) {
+    const applications = await this.prismaService.jobApplication.findMany({
+      where: {
+        userId: id, // Match the user ID
+        applicationStatus: 'pending', // Match the application status
+      },
+    });
+
+    if (!applications) {
+      throw new Error('Application not found or status does not match');
+    }
+
+    return applications;
+  }
+
+  async getScheduledApplications(id: number) {
+    const applications = await this.prismaService.jobApplication.findMany({
+      where: {
+        userId: id, // Match the user ID
+        applicationStatus: 'Shortlisted', // Match the application status
+      },
+    });
+
+    if (!applications) {
+      throw new Error('Application not found or status does not match');
+    }
+
+    return applications;
   }
 }
