@@ -31,6 +31,17 @@ export class JobApplicationsService {
       },
     });
 
+    const updatedJob = await this.prismaService.job.update({
+      where: { id: dto.jobId },
+      data: {
+        applicants: {
+          increment: 1,
+        },
+      },
+    });
+
+    console.log('After updating applicants:', updatedJob.applicants);
+
     return application;
   }
 
@@ -65,5 +76,27 @@ export class JobApplicationsService {
     });
 
     return UpdatedApplication;
+  }
+  async applicantsList() {
+    const applicantsList = await this.prismaService.jobApplication.findMany();
+    if (!applicantsList)
+      throw new NotFoundException("Apllicants Doesn't Exist ");
+    return applicantsList;
+  }
+
+  async searchApplicant(jobId: number) {
+    const filteredApplicants = await this.prismaService.jobApplication.findMany(
+      {
+        where: {
+          jobId: jobId,
+        },
+      },
+    );
+
+    if (filteredApplicants.length === 0) {
+      throw new NotFoundException(`No applicants found for job ID ${jobId}`);
+    }
+
+    return filteredApplicants;
   }
 }

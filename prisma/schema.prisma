@@ -45,6 +45,7 @@ model Job {
   location    String
   salaryMin   Int
   salaryMax   Int
+applicants  Int      @default(0) 
 
   applications JobApplication[] 
 }
