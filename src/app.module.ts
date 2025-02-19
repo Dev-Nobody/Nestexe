@@ -8,12 +8,17 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { JobManagementModule } from './job-management/job-management.module';
 import { JobApplicationsModule } from './job-applications/job-applications.module';
 import { UserModule } from './user/user.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     AuthModule,
     PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    // MulterModule.register({
+    //   dest: './uploads',
+    // }),
     ThrottlerModule.forRoot([
       {
         ttl: 60,
@@ -33,6 +38,7 @@ import { UserModule } from './user/user.module';
     JobManagementModule,
     JobApplicationsModule,
     UserModule,
+    CloudinaryModule,
   ],
   providers: [
     {

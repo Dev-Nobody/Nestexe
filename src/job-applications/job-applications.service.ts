@@ -24,6 +24,19 @@ export class JobApplicationsService {
 
     if (!job) throw new NotFoundException("Job Doesn't Exist Anymore");
 
+    // Check if the user has already applied for this job
+    const existingApplication =
+      await this.prismaService.jobApplication.findFirst({
+        where: {
+          userId,
+          jobId: dto.jobId,
+        },
+      });
+
+    if (existingApplication) {
+      throw new ForbiddenException('You have already applied for this job');
+    }
+
     const application = await this.prismaService.jobApplication.create({
       data: {
         userId,
@@ -91,6 +104,7 @@ export class JobApplicationsService {
         where: {
           jobId: jobId,
         },
+        include: { user: true, job: true },
       },
     );
 
@@ -144,7 +158,7 @@ export class JobApplicationsService {
   async getScheduledApplications(id: number) {
     const applications = await this.prismaService.jobApplication.findMany({
       where: {
-        userId: id, // Match the user ID
+        userId: id,
         applicationStatus: 'Shortlisted', // Match the application status
       },
     });
@@ -154,5 +168,18 @@ export class JobApplicationsService {
     }
 
     return applications;
+  }
+
+  async appliedJobs(id: number) {
+    const appliedJobs = await this.prismaService.jobApplication.findMany({
+      where: {
+        userId: id,
+      },
+      include: { job: true },
+    });
+
+    if (!appliedJobs) throw new ForbiddenException('Applied for No Job');
+
+    return appliedJobs;
   }
 }

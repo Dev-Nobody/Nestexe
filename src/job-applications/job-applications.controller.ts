@@ -63,4 +63,10 @@ export class JobApplicationsController {
   async applicationScheduled(@Request() req: any) {
     return this.jobApplications.getScheduledApplications(req.user.id);
   }
+
+  @Get('appliedJobs')
+  @UseGuards(JwtGuard)
+  async appliedJobs(@Request() req: any) {
+    return this.jobApplications.appliedJobs(req.user.id);
+  }
 }

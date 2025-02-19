@@ -20,6 +20,10 @@ model User{
 
   email String @unique
   hash String 
+  username    String?    @unique
+  phoneNumber String?   
+  profileImage String?  
+
   role String @default("user")
 
   isVerified Boolean @default(false)

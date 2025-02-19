@@ -39,6 +39,8 @@ export class AuthService {
           hash,
           isVerified: false,
           role: authDto.role,
+          username: authDto.username,
+          phoneNumber: authDto.phoneNumber,
         },
       });
       const tokenData = this.signToken(user.id, user.email);
