@@ -43,7 +43,7 @@ export class AuthService {
           phoneNumber: authDto.phoneNumber,
         },
       });
-      const tokenData = this.signToken(user.id, user.email);
+      const tokenData = this.signToken(user.id, user.email, user.role);
       const token = (await tokenData).access_token;
       await this.prismaService.user.update({
         where: { id: user.id },
@@ -79,7 +79,7 @@ export class AuthService {
 
     if (!user.isVerified) throw new ForbiddenException('Not Verified');
 
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id, user.email, user.role);
   }
 
   async verifyEmail(dto: VerifyEmailDto) {
@@ -141,10 +141,12 @@ export class AuthService {
   async signToken(
     userId: number,
     email: string,
+    role: string,
   ): Promise<{ access_token: string }> {
     const payload = {
       id: userId,
       email,
+      role,
     };
     const secret = this.config.get('JWT_SECRET');
 
