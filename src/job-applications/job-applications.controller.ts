@@ -43,6 +43,12 @@ export class JobApplicationsController {
     return this.jobApplications.searchApplicant(Number(id)); // Convert id to number
   }
 
+  @Get('appliedCheck/:id')
+  @UseGuards(JwtGuard)
+  async appliedCheck(@Param('id') id: string, @Request() req: any) {
+    return this.jobApplications.appliedCheck(Number(id), req.user.id); // Convert id to number
+  }
+
   @Get('pending')
   async getPendingApplicants() {
     return this.jobApplications.pendingApplicants();

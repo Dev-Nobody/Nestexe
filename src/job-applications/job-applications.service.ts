@@ -115,6 +115,18 @@ export class JobApplicationsService {
     return filteredApplicants;
   }
 
+  async appliedCheck(jobId: number, id: number) {
+    const check = await this.prismaService.jobApplication.findMany({
+      where: {
+        jobId: jobId,
+        userId: id,
+      },
+      // include: { user: true, job: true },
+    });
+
+    return check;
+  }
+
   async pendingApplicants() {
     const pendingApplicants = await this.prismaService.jobApplication.findMany({
       where: { applicationStatus: 'Pending' },
@@ -146,6 +158,7 @@ export class JobApplicationsService {
         userId: id, // Match the user ID
         applicationStatus: 'pending', // Match the application status
       },
+      include: { job: true },
     });
 
     if (!applications) {
@@ -161,6 +174,7 @@ export class JobApplicationsService {
         userId: id,
         applicationStatus: 'Shortlisted', // Match the application status
       },
+      include: { job: true },
     });
 
     if (!applications) {
