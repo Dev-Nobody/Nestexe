@@ -7,7 +7,7 @@ export class VerifyEmailDto {
 
   @IsString()
   @IsNotEmpty()
-  token: string;
+  otp: string;
 }
 
 export class VerifyEmailOtpDTo {

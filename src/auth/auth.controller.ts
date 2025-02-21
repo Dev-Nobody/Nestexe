@@ -19,11 +19,6 @@ export class AuthController {
     return this.authService.signin(authDto);
   }
 
-  @Get('logout')
-  logout() {
-    return this.authService.logout();
-  }
-
   @Post('verify-email')
   verifyEmail(@Body() verifyDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyDto);
@@ -44,5 +39,13 @@ export class AuthController {
   @Post('resend-otp')
   ResendOtp(@Body() resendOtpDto: ResendOtpDto) {
     return this.authService.resendOtp(resendOtpDto);
+  }
+
+  @Throttle({ default: { limit: 1, ttl: 60000 } })
+  @UseFilters(ThrottlerExceptionFilter)
+  @Post('resend-token')
+  ResendToken(@Body() resendTokenDto: ResendOtpDto) {
+    console.log('Entered controller');
+    return this.authService.resendToken(resendTokenDto);
   }
 }

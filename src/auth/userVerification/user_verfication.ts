@@ -111,4 +111,27 @@ export class VerificationService {
       },
     });
   }
+
+  async verifyOtpReg(email: string, otp: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.otp !== otp) {
+      throw new BadRequestException('Invalid Token');
+    }
+
+    // Update user as verified and clear the token
+    await this.prisma.user.update({
+      where: { email },
+      data: {
+        isVerified: true,
+        otp: null,
+      },
+    });
+  }
 }

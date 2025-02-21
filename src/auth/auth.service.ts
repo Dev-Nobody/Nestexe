@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto, SigninDto } from './dto';
+import { AuthDto, ResendOtpDto, SigninDto } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -25,6 +25,7 @@ export class AuthService {
 
   async signup(authDto: AuthDto) {
     try {
+      const otp = await this.userVerify.generateOtp();
       if (
         !authDto.confirmPassword ||
         authDto.password !== authDto.confirmPassword
@@ -47,10 +48,10 @@ export class AuthService {
       const token = (await tokenData).access_token;
       await this.prismaService.user.update({
         where: { id: user.id },
-        data: { token },
+        data: { token, otp },
       });
 
-      // await this.userVerify.sendTokenEmail(user.email, token);
+      await this.userVerify.sendOtpEmail(user.email, otp);
 
       return {
         message: 'User registered successfully. Please verify your email.',
@@ -58,11 +59,10 @@ export class AuthService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          // this prisma code indicates tht field is unique and someone is entering same
           throw new ForbiddenException('Credentials taken ');
         }
       }
-      throw error; // if error is not from prisma then throw this error
+      throw error;
     }
   }
 
@@ -77,13 +77,13 @@ export class AuthService {
 
     if (!passMatch) throw new ForbiddenException('Credentials incorrect');
 
-    if (!user.isVerified) throw new ForbiddenException('Not Verified');
+    // if (!user.isVerified) throw new ForbiddenException('Not Verified');
 
     return this.signToken(user.id, user.email, user.role);
   }
 
   async verifyEmail(dto: VerifyEmailDto) {
-    await this.userVerify.verifyToken(dto.email, dto.token);
+    await this.userVerify.verifyOtpReg(dto.email, dto.otp);
     return { message: 'Email verified successfully.' };
   }
 
@@ -113,7 +113,7 @@ export class AuthService {
 
     if (!user) throw new ForbiddenException("USer Doesn't exist");
 
-    // await this.userVerify.sendOtpEmail(dto.email, otp);
+    await this.userVerify.sendOtpEmail(dto.email, otp);
 
     return { message: 'Check Your Email For OTP.' };
   }
@@ -133,8 +133,32 @@ export class AuthService {
     }
   }
 
-  async logout() {
-    return { message: 'User Logout Sucessfully' };
+  async resendToken(dto: ResendOtpDto) {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: { email: dto.email },
+      });
+
+      if (!user) throw new ForbiddenException('User does not exist');
+      if (user.isVerified)
+        throw new ForbiddenException('User already verified');
+
+      const tokenData = this.signToken(user.id, user.email, user.role);
+      const token = (await tokenData).access_token;
+
+      await this.prismaService.user.update({
+        where: { id: user.id },
+        data: { token },
+      });
+
+      await this.userVerify.sendTokenEmail(user.email, token);
+
+      return {
+        message: 'Verification token has been resent. Check your email.',
+      };
+    } catch (error) {
+      throw new BadGatewayException('Error resending token');
+    }
   }
 
   //Function For Creating Token
